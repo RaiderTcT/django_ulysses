@@ -1,0 +1,6 @@
+{{ user.username }}，你好
+欢迎来到 Ulysses
+为了验证您的账户，请点击以下链接进行验证
+链接
+Ulysses
+请勿回复此邮件

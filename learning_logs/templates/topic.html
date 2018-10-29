@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ id }}{% endblock %}
+
+{% block header %}
+  <h2>{{ text }}</h2>
+{% endblock %}
+
+{% block content %}
+  <p><a href="{% url 'learning_logs:new_post' id %}">Add new post:</a></p>
+  {% for post in posts %}
+    <div class="card text-white bg-dark mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.date_added|date:'M d, Y H:i' }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted" >{{ post.date_edit|date:'M d, Y H:i' }}</h6>
+        <p class="card-text">{{ post.text|linebreaks }}</p>
+        <a class="btn btn-primary" href="{% url 'learning_logs:edit_post' post.id %}">edit post</a>
+      </div>
+    </div>
+  {% empty %}
+    <p>Waiting to add...</p>
+  {% endfor %}
+{% endblock %}

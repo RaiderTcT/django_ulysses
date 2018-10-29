@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block title %}Edit post{% endblock %}
+{% block content%}
+<h1><a href="{% url 'learning_logs:topic' topic.id %}">{{ topic }} </a></h1>
+<p>Edit post:</p>
+<form action="{% url 'learning_logs:edit_post' post.id %}" method="post">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  <input type="submit" value="保存"/>
+</form>
+{% endblock %}

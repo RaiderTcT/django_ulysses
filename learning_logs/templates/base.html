@@ -1,0 +1,147 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="{% static 'img/dj.ico' %}">
+    <title>{% block title %}My amazing site{% endblock %}</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+  </head>
+
+<body>
+    <!--navbar 导航栏-->
+{#    <nav class="navbar navbar-default navbar-static-top navbar-dark bg-dark">#}
+{#      <div class="container">#}
+{##}
+{#        <div class="navbar-header">#}
+{#          <button type="button" class="navbar-toggle collapsed"#}
+{#              data-toggle="collapse" data-target="#navbar"#}
+{#              aria-expanded="false" aria-controls="navbar">#}
+{#          </button>#}
+{#          <a class="nav-brand" href="{% url 'learning_logs:index' %}">Learning Log</a>#}
+{#        </div>#}
+{##}
+{#        <div id="navbar" class="navbar-collapse collapse">#}
+{#          <ul class="nav navbar-nav">#}
+{#            <li><a href="{% url 'learning_logs:topics' %}">Topics</a></li>#}
+{#          </ul>#}
+{##}
+{#          <ul class="nav navbar-nav navbar-right">#}
+{#            {% if user.is_authenticated %}#}
+{#              <li>Hello, {{ user.username }}!</li>#}
+{#              <li><a href="{% url 'users:logout' %}">Log out</a></li>#}
+{#            {% else %}#}
+{#              <li><a href="{% url 'users:login' %}">Log in</a></li>#}
+{#              <li><a href="{% url 'users:register' %}">Register</a></li>#}
+{#            {% endif %}#}
+{#          </ul>#}
+{#        </div> <!--endof nav-collapse-->#}
+{##}
+{#      </div><!--endof container-->#}
+{#    </nav>#}
+  <nav class="navbar navbar-expand-md sticky-top navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Blog</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link active" href="{% url 'learning_logs:index' %}">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'learning_logs:topics' %}">博客</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="dropdown-toggle my-auto" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ user.username }}<b class="caret"></b>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">我的文章</a>
+              <a class="dropdown-item" href="{% url 'learning_logs:new_topic' %}">创建博客</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'users:logout' %}">退出</a>
+            </div>
+          </li>
+        {% else %}
+          <li class="nav-item dropdown">
+            <a class="dropdown-toggle my-auto" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ user.username }}<b class="caret"></b>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">我的文章</a>
+              <a class="dropdown-item" href="{% url 'learning_logs:new_topic' %}">创建博客</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'users:logout' %}">退出</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class='nav-link' href="{% url 'users:login' %}">登录</a>
+          </li>
+        {% endif %}
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+{#    django message#}
+{#  {% if messages %}#}
+{#    <ul class="messages">#}
+{#        {% for message in messages %}#}
+{#        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>#}
+{#            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}#}
+{#            {{ message }}#}
+{#        </li>#}
+{#        {% endfor %}#}
+{#    </ul>#}
+{#  {% endif %}#}
+  {% if messages %}
+    {% for message in messages %}
+      {# 原生 Bootstrap #}
+{#      <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">#}
+{#        {{ message }}#}
+{#        <button type="button" class="close" data-dismiss="alert" aria-label="Close">#}
+{#          <span aria-hidden="true">&times;</span>#}
+{#        </button>#}
+{#      </div>#}
+      {# django-bootstrap #}
+      <div>
+        {% bootstrap_alert message alert_type=message.tags %}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+
+    <div class="container">
+      <div class="page-header">
+        {% block header %}{% endblock %}
+      </div>
+      <div>
+        {% block content %}{% endblock %}
+      </div>
+    </div><!--endof container-->
+</body>
+<script>
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-XXXXX-X']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+</script>
+
+</html>
