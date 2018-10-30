@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from datetime import datetime
 from django.contrib import messages
-from django_ulysses.settings import DANGER, PRIMARY
+
 # Create your views here.
 def index(request):
     html = '<html><head><title>Index</title></head>' \
@@ -32,9 +32,21 @@ def topic(request, topic_id):
     except Topic.DoesNotExist:
         return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
 
-@login_required
+
 def topics(request):
     """全部的topics"""
+    topics = Topic.objects.order_by('-date_added')
+    paginator = Paginator(topics, 10) # 每页25条
+    try:
+        page = request.GET.get('page')
+    except InvalidPage:
+        raise Http404('指定的页面不存在')
+    topics = paginator.get_page(page) # 获取指定页面
+    context = {'topics':topics}
+    return render(request, 'topics.html', context)
+
+@login_required
+def my_topics(request):
     # 取当登录前用户创建的topic
     topics = Topic.objects.filter(owner=request.user).order_by('-date_added')
     paginator = Paginator(topics, 10) # 每页25条
@@ -56,12 +68,14 @@ def new_topic(request):
         # check whether it's valid:
         if form.is_valid():
             # 添加数据到数据库
-            topic = Topic(text=request.POST.get('topic_name'))
+            topic = Topic(text=request.POST.get('text'), owner=request.user)
+
+            print(f'text:{topic.text}')
             topic.save()
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('learning_logs:topics'))
+            return HttpResponseRedirect(reverse('learning_logs:my_topics'))
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -129,3 +143,18 @@ def edit_post(request, post_id):
 
     context = {'form': form, 'topic': topic, 'post': post}
     return render(request, 'edit_post.html', context)
+
+def search(request):
+    key_word = request.POST.get('key_word')
+    if not key_word:
+        messages.add_message(request, messages.WARNING, '请输入查询内容')
+        return HttpResponseRedirect(reverse('learning_logs:topics'))
+    topics = Topic.objects.filter(text__contains=key_word).all()
+    paginator = Paginator(topics, 10)  # 每页25条
+    try:
+        page = request.GET.get('page')
+    except InvalidPage:
+        raise Http404('指定的页面不存在')
+    topics = paginator.get_page(page) # 获取指定页面
+    context = {'topics':topics}
+    return render(request, 'topics.html', context)

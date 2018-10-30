@@ -3,9 +3,13 @@ from .models import Topic, Post
 
 
 
-class TopicForm(Form):
+class TopicForm(ModelForm):
     """Topic表单"""
-    topic_name = CharField(label='主题:', max_length=20)
+    class Meta:
+        model = Topic
+        fields = ['text']
+        labels = {'text': ""}
+
 
 class PostForm(ModelForm):
     """Post表单"""

@@ -60,35 +60,25 @@
         </li>
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
-            <a class="dropdown-toggle my-auto" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{ user.username }}<b class="caret"></b>
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ user.username }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">我的文章</a>
+              <a class="dropdown-item" href="{% url 'learning_logs:my_topics' %}">我的文章</a>
               <a class="dropdown-item" href="{% url 'learning_logs:new_topic' %}">创建博客</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="{% url 'users:logout' %}">退出</a>
             </div>
           </li>
         {% else %}
-          <li class="nav-item dropdown">
-            <a class="dropdown-toggle my-auto" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{ user.username }}<b class="caret"></b>
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">我的文章</a>
-              <a class="dropdown-item" href="{% url 'learning_logs:new_topic' %}">创建博客</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="{% url 'users:logout' %}">退出</a>
-            </div>
-          </li>
           <li class="nav-item">
             <a class='nav-link' href="{% url 'users:login' %}">登录</a>
           </li>
         {% endif %}
       </ul>
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <form class="form-inline my-2 my-lg-0" action="{% url "learning_logs:search"%} " method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="key_word">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>

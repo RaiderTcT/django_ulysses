@@ -1,30 +1,32 @@
 from django.core.mail import send_mail,send_mass_mail, EmailMultiAlternatives
+from django.template import loader, Template
 from celery import task
+from django_ulysses.settings import BASE_URL
 import os
 
 
 @task
-def send_register_email(user):
+def send_register_email(user, token):
 
-    subject, from_email, to = "注册", os.environ.get('EMAIL_HOST_USER', "2276777056@qq.com"), \
+    subject, from_email, to = "[Django]验证用户", os.environ.get('EMAIL_HOST_USER', "2276777056@qq.com"), \
                               user.email
-    text_content = "{{ user.username }}，你好\
+
+    url = BASE_URL+f'users/confirm/{token}'
+
+    text_content = f"{user.username}，你好\
                     欢迎来到 Ulysses\
                     为了验证您的账户，请点击以下链接进行验证\
-                    链接\
+                    链接:{url}\
                     Ulysses\
                     请勿回复此邮件"
-    html_content = f"<p>{user.username}， 你好</p>\
-                    <p>欢迎来到 <b>Ulysses</b>!</p>\
-                    <p>为了验证您的账户，请点击进行验证</p>\
-                    <p>或者您可以在浏览器被输入以下内容：</p>\
-                    <p>链接</p>\
-                    <p>Ulysses</p>\
-                    <p><small>请勿回复此邮件</small></p>"
+
+    html_template = loader.get_template('email/confirm.html')
+    context = {'user':user, 'url':url}
+    html_context = html_template.render(context)
     email = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_email, to=[to])
-    email.attach_alternative(html_content, 'text/html')
+    email.attach_alternative(html_context, 'text/html')
     # email.attach_alternative()
     # 添加附件
-    email.attach_file('users/templates/email/confirm.html', 'text/plain')
-    email.attach_file('users/templates/email/confirm.txt', 'text/html')
+    # email.attach_file('users/templates/email/confirm.html', 'text/plain')
+    # email.attach_file('users/templates/email/confirm.txt', 'text/html')
     email.send()

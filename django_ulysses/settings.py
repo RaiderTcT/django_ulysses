@@ -52,6 +52,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     'learning_logs',
     'users',
     'bootstrap4',
+    'fullurl',
 ]
 INSTALLED_APPS += ("djcelery", )
 
@@ -171,3 +173,6 @@ BROKER_URL= 'redis://localhost:6379/0'
 
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 # CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler' ###
+
+
+BASE_URL = 'http://127.0.0.1:8000/'

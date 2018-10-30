@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+{% load fullurl %}
 {% block title %}Register{% endblock %}
 {% block content %}
 {#<div class="alert alert-primary" role="alert">#}
@@ -9,7 +10,7 @@
 {#  </button>#}
 {#</div>#}
 {#{% bootstrap_alert "Something " alert_type='error' %}#}
-  <form action="{% url 'users:register' %}" method="post">
+  <form action="{% fullurl 'users:register' %}" method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
     <input type="submit" value="注册"/>
