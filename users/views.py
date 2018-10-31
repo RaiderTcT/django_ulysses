@@ -1,15 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from .forms import RegisterForm
-from django_ulysses.settings import EMAIL_HOST_USER
-from users.tasks import send_register_email
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django_ulysses.settings import DANGER, PRIMARY
 from .confirm import token_confirm
+from .forms import RegisterForm, UserProfileForm
+from users.tasks import send_register_email
+from .models import UserProfile
 # Create your views here.
 
 def confirm(request, token):
@@ -66,6 +66,36 @@ def register(request):
     context = {'form': form}
     return render(request, 'register.html', context)
 
+@login_required
+def profile(request):
+    """显示个人信息"""
+    user = request.user
+    context = {'user':user}
+    return render(request, 'user.html', context)
+
+
+@login_required
+def edit_profile(request):
+    """修改个人信息"""
+    user = request.user
+    profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method != 'POST':
+        # 使用数据库中查询得到profile创建表单
+        form = UserProfileForm(instance=profile)
+    else:
+        form = UserProfileForm(data=request.POST)
+        if form.is_valid():
+            # cleaned_data 将输入数据规范化成合适的格式
+            profile.about_me = form.cleaned_data['about_me']
+            profile.location = form.cleaned_data['location']
+            profile.tel = form.cleaned_data['tel']
+            profile.save()
+        return HttpResponseRedirect(reverse('users:profile'))
+    context = {'form': form}
+    return render(request, 'edit_profile.html', context)
+
+
 
 
 # def my_login_view(request):
@@ -88,3 +118,8 @@ def register(request):
 
 
 
+def create_profile():
+    users = User.objects.filter(is_active=True)
+    for user in users:
+        new_profile = UserProfile(user=user)
+        new_profile.save()

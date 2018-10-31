@@ -22,6 +22,10 @@ class Post(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_edit = models.DateTimeField(auto_now_add=True)
 
+    # Model metadata is “anything that’s not a field”, such as ordering options (ordering),
+    #  database table name (db_table),
+    # or human-readable singular and plural names (verbose_name and verbose_name_plural).
+    # None are required, and adding class Meta to a model is completely optional.
     class Meta:
         verbose_name_plural = 'posts'
 

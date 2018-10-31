@@ -1,6 +1,9 @@
-from django.forms import Form, CharField, PasswordInput, EmailField
+from django.forms import EmailField, Textarea
+from django.forms.models import ModelForm
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
+from users.models import UserProfile
+
 
 class RegisterForm(UserCreationForm):
     email = EmailField()
@@ -11,6 +14,14 @@ class RegisterForm(UserCreationForm):
         field_classes = {'username': UsernameField}
 
 
+class UserProfileForm(ModelForm):
+
+    class Meta:
+        model = UserProfile
+        fields = ('location', 'tel', 'about_me')
+        widgets = {
+            'about_me': Textarea(attrs={'cols': 80}),
+        }
 
 
 # class LoginForm(Form):

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block title %} 我的信息{% endblock %}
+{% block content %}
+  <div>
+  {% if user.is_authenticated %}
+    <h2>{{ user.username }}</h2>
+    <p>邮箱：{{ user.email }}</p>
+    <P>个人信息
+      <a class="btn btn-default" href="{% url 'users:edit_profile' %}" role="button">编辑</a>
+{#      {% bootstrap_button "编辑" button_type='link' href="{% url '' %}" button_class="btn-default" %}#}
+    </P>
+    <ul>
+      <li>地址: {{ user.profile.location }} </li>
+      <li>联系方式: {{ user.profile.tel }} </li>
+      <li>关于我: {{ user.profile.about_me }} </li>
+      <li>上次修改时间：{{ user.profile.mod_date }}</li>
+    </ul>
+  {% endif %}
+  </div>
+
+{% endblock %}

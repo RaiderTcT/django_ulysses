@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block title %} 我的信息{% endblock %}
+{% block content %}
+  <form action="{% url 'users:edit_profile' %}" method="post">
+  {% csrf_token %}
+    {% bootstrap_form form %}
+  <input type="submit" value="提交"/>
+  </form>
+{% endblock %}

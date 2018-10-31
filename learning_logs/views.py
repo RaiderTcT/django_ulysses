@@ -158,3 +158,4 @@ def search(request):
     topics = paginator.get_page(page) # 获取指定页面
     context = {'topics':topics}
     return render(request, 'topics.html', context)
+
