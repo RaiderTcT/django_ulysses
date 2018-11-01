@@ -9,6 +9,7 @@ urlpatterns = [
     path('logout/',auth_views.LogoutView.as_view(template_name='index.html'), name='logout'),
     path('register/', register, name='register'),
     re_path(r"^confirm/(?P<token>\w+.[-_\w]*\w+.[-_\w]*\w+)/$", confirm, name='confirm'),
-    path('edit_profile/', edit_profile, name='edit_profile'),
-    path('profile/',profile, name='profile'),
+    path('edit_profile/<user_id>', edit_profile, name='edit_profile'),
+    path('profile/<user_id>',profile, name='profile'),
+
 ]

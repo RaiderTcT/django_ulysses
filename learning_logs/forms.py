@@ -1,5 +1,6 @@
 from django.forms import Form, ModelForm, Textarea, CharField
 from .models import Topic, Post
+from mdeditor.fields import MDTextFormField, MDEditorWidget
 
 
 
@@ -17,6 +18,7 @@ class PostForm(ModelForm):
         model = Post # 模型
         fields = ['text']   # 表单字段
         labels = {'text': ""} # verbose name
+
         widgets = {
-            'text': Textarea(attrs={'cols': 80}),
+            'text': MDEditorWidget(),
         }

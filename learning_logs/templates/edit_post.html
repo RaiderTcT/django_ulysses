@@ -6,6 +6,7 @@
 <p>Edit post:</p>
 <form action="{% url 'learning_logs:edit_post' post.id %}" method="post">
   {% csrf_token %}
+  {{form.media}}
   {% bootstrap_form form %}
   <input type="submit" value="保存"/>
 </form>

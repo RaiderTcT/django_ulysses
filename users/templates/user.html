@@ -1,21 +1,33 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+{% block head %} {% endblock %}
 {% block title %} 我的信息{% endblock %}
 {% block content %}
   <div>
-  {% if user.is_authenticated %}
-    <h2>{{ user.username }}</h2>
-    <p>邮箱：{{ user.email }}</p>
-    <P>个人信息
-      <a class="btn btn-default" href="{% url 'users:edit_profile' %}" role="button">编辑</a>
-{#      {% bootstrap_button "编辑" button_type='link' href="{% url '' %}" button_class="btn-default" %}#}
-    </P>
-    <ul>
-      <li>地址: {{ user.profile.location }} </li>
-      <li>联系方式: {{ user.profile.tel }} </li>
-      <li>关于我: {{ user.profile.about_me }} </li>
-      <li>上次修改时间：{{ user.profile.mod_date }}</li>
-    </ul>
+  {% if target_user.is_authenticated %}
+    <div style="position: absolute">
+      <img src="{{ target_user.profile.avatar.url }}" alt="头像" style="width:250px; height: 250px; "/>
+{#      <input type="file"  style="position: absolute;width: 250px;height: 250px;top: 0;left: 0;opacity: 0" />#}
+    </div>
+
+    <div style="margin-left: 280px;">
+      <h2>{{ target_user.username }}</h2>
+      <p>邮箱：<a href="mailto:{{ user.email }}?subject=Hello%20World">{{ target_user.email }}</a></p>
+      <P>个人信息
+        {% if user == target_user %}
+        <a class="btn btn-default" href="{% url 'users:edit_profile' target_user.id%}" role="button">编辑</a>
+  {#      {% bootstrap_button "编辑" button_type='link' href="{% url '' %}" button_class="btn-default" %}#}
+        {% endif %}
+      </P>
+      <ul>
+        <li>地址: {{ target_user.profile.location }} </li>
+        <li>联系方式: {{ target_user.profile.tel }} </li>
+        <li>关于我: {{ target_user.profile.about_me }} </li>
+        <li>上次修改时间：{{ target_user.profile.mod_date }}</li>
+      </ul>
+    </div>
+    <hr/>
+
   {% endif %}
   </div>
 

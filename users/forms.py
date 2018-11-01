@@ -18,7 +18,7 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ('location', 'tel', 'about_me')
+        fields = ('location', 'tel', 'about_me', 'avatar')
         widgets = {
             'about_me': Textarea(attrs={'cols': 80}),
         }

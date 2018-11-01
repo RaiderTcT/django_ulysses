@@ -31,7 +31,7 @@ class UserProfile(models.Model):
     tel = models.CharField('联系方式', max_length=50, blank=True)
     about_me = models.TextField('关于我')
     mod_date = models.DateTimeField('上次修改日期', auto_now=True)
-    avatar = models.ImageField(upload_to='avatar/', blank=True, null=True)
+    avatar = models.ImageField('用户头像', upload_to='avatar/%Y/%m/%d', default='avatar/wenhuang.jpg',blank=True, null=True)
 
     class Meta:
         verbose_name = "用户信息"

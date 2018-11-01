@@ -10,6 +10,7 @@ from .confirm import token_confirm
 from .forms import RegisterForm, UserProfileForm
 from users.tasks import send_register_email
 from .models import UserProfile
+from PIL import Image
 # Create your views here.
 
 def confirm(request, token):
@@ -67,35 +68,44 @@ def register(request):
     return render(request, 'register.html', context)
 
 @login_required
-def profile(request):
+def profile(request, user_id):
     """显示个人信息"""
+    # 要查看的用户
+    target_user = User.objects.get(id=user_id)
+    # 当前用户
     user = request.user
-    context = {'user':user}
+    context = {'target_user':target_user, 'user':user}
     return render(request, 'user.html', context)
 
 
 @login_required
-def edit_profile(request):
+def edit_profile(request, user_id):
     """修改个人信息"""
-    user = request.user
+    user = User.objects.get(id=user_id)
+    if user != request.user:
+        raise Http404('请登录要修改的账户')
+
     profile = get_object_or_404(UserProfile, user=user)
 
     if request.method != 'POST':
         # 使用数据库中查询得到profile创建表单
         form = UserProfileForm(instance=profile)
     else:
-        form = UserProfileForm(data=request.POST)
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             # cleaned_data 将输入数据规范化成合适的格式
-            profile.about_me = form.cleaned_data['about_me']
-            profile.location = form.cleaned_data['location']
-            profile.tel = form.cleaned_data['tel']
-            profile.save()
-        return HttpResponseRedirect(reverse('users:profile'))
-    context = {'form': form}
+            # profile.about_me = form.cleaned_data['about_me']
+            # profile.location = form.cleaned_data['location']
+            # profile.tel = form.cleaned_data['tel']
+            form.save()
+        return HttpResponseRedirect(reverse('users:profile',args=(user_id,)))
+    context = {'form': form, 'user': user}
     return render(request, 'edit_profile.html', context)
 
-
+@login_required
+def upload_img(request):
+    pass
+    # avatar = Image.open(request.data[])
 
 
 # def my_login_view(request):

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from datetime import datetime
 from django.contrib import messages
-
+from markdown import markdown
 # Create your views here.
 def index(request):
     html = '<html><head><title>Index</title></head>' \
@@ -23,11 +23,8 @@ def topic(request, topic_id):
     # id = request.GET.get('id', 4)
     try:
         t = Topic.objects.get(id=topic_id)
-        if t.owner != request.user:
-            raise Http404('You have no right')
-        text = t.text
         posts = t.post_set.order_by('-date_added')
-        context = {'id':topic_id, 'text':text, 'posts':posts}
+        context = {'topic': t, 'posts':posts, 'user':request.user}
         return render(request, 'topic.html', context)
     except Topic.DoesNotExist:
         return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
@@ -92,8 +89,7 @@ def new_post(request, topic_id):
         topic = Topic.objects.get(id=topic_id)
     except Topic.DoesNotExist:
         raise Http404('No this topic')
-    if topic.owner != request.user:
-        raise Http404('You have no right')
+
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -104,6 +100,9 @@ def new_post(request, topic_id):
             #　return an object that hasn’t yet been saved to the database
             new_post = form.save(commit=False)
             new_post.topic = topic
+            # 在服务器上 进行转换， 只提交markdown文本原文
+            # new_post.html_content = markdown(request.POST.get('text'),extensions=['markdown.extensions.extra',])
+            new_post.owner = request.user
             new_post.save()
             # process the data in form.cleaned_data as required
             # ...
@@ -125,7 +124,7 @@ def edit_post(request, post_id):
     except Post.DoesNotExist:
         raise Http404('No this post')
     topic = post.topic
-    if topic.owner != request.user:
+    if post.owner != request.user:
         raise Http404('You have no right to edit this post')
 
     if request.method != "POST":
@@ -137,7 +136,7 @@ def edit_post(request, post_id):
         form = PostForm(data=request.POST, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
-            post.date_edit = datetime.utcnow()
+            # post.html_content = markdown(form.cleaned_data['text'])
             post.save()
             return HttpResponseRedirect(reverse('learning_logs:topic', args=(topic.id,)))
 

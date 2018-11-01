@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
+from markdown import markdown
+from mdeditor.fields import MDTextField
 # Create your models here.
 class Topic(models.Model):
     """主题"""
@@ -18,9 +20,12 @@ class Post(models.Model):
     # many to one relationship
     id = models.IntegerField(auto_created=True, primary_key=True)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, verbose_name='the related topic')
-    text = models.TextField('post content')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='the owner of the post')
+    # text = models.TextField('post content')
+    text = MDTextField()
+    html_content = models.TextField('html content', blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
-    date_edit = models.DateTimeField(auto_now_add=True)
+    date_edit = models.DateTimeField(auto_now=True)
 
     # Model metadata is “anything that’s not a field”, such as ordering options (ordering),
     #  database table name (db_table),
@@ -31,3 +36,18 @@ class Post(models.Model):
 
     def __str__(self):
         return  self.text[:50] + '...'
+
+
+class ExampleModel(models.Model):
+    name = models.CharField(max_length=10)
+    content = MDTextField()
+
+
+# 只提交Markdown源文本，在服务器上进行转换
+# instance 正要被保存的Post对象实例
+# update_fields 要更新的字段
+@receiver(pre_save, sender=Post)
+def md_trans(sender, update_fields=None, instance=None, **kwargs):
+    """在post文本提交时，进行markdown转html"""
+    instance.html_content = markdown(instance.text, extensions=['markdown.extensions.extra',])
+    update_fields = ['html_content', ]

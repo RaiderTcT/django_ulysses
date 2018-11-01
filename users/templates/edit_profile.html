@@ -2,9 +2,9 @@
 {% load bootstrap4 %}
 {% block title %} 我的信息{% endblock %}
 {% block content %}
-  <form action="{% url 'users:edit_profile' %}" method="post">
+  <form action="{% url 'users:edit_profile' user.id  %}" method="post">
   {% csrf_token %}
     {% bootstrap_form form %}
-  <input type="submit" value="提交"/>
+  <input type="submit" value="提交" formenctype="multipart/form-data"/>
   </form>
 {% endblock %}

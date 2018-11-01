@@ -6,6 +6,7 @@
 <p>Add new post:</p>
 <form action="{% url 'learning_logs:new_post' topic.id %}" method="post">
   {% csrf_token %}
+  {{form.media}}
   {% bootstrap_form form %}
   <input type="submit" value="添加"/>
 </form>
