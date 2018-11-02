@@ -53,7 +53,8 @@ SECRET_KEY = '8pqf(8jqsytrh#-%_0tbrxcibvc!p)l_f3mozz7$8h1nty(^wj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# 允许你设置哪些域名可以访问，即使在 Apache 或 Nginx 等中绑定了，这里不允许的话，也是不能访问的。
+ALLOWED_HOSTS = ['www.djulysses.com', ]
 
 
 # Application definition
@@ -72,8 +73,15 @@ INSTALLED_APPS = [
     'bootstrap4',
     'fullurl',
     'mdeditor',
+    'absoluteuri',
+    "djcelery",
+    'django.contrib.sites',
 ]
-INSTALLED_APPS += ("djcelery", )
+
+SITE_ID = 1
+
+ABSOLUTEURI_PROTOCOL = 'http'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -91,8 +99,8 @@ ROOT_URLCONF = 'django_ulysses.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../../../django_ulysses/learning_logs/templates'),
-                 os.path.join(BASE_DIR, '../../../users/templates')],
+        'DIRS': [os.path.join(BASE_DIR, '/learning_logs/templates').replace("\\", "/"),
+                 os.path.join(BASE_DIR, '/users/templates').replace("\\", "/")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -157,10 +165,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+# 当运行 python manage.py collectstatic 的时候
+# STATIC_ROOT 文件夹 是用来将所有STATICFILES_DIRS中所有文件夹中的文件，以及各app中static中的文件都复制过来
+# 把这些文件放到一起是为了用apache等部署的时候更方便
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 STATIC_URL = '/static/'
+# 其它 存放静态文件的文件夹，可以用来存放项目中公用的静态文件，里面不能包含 STATIC_ROOT
+# 如果不想用 STATICFILES_DIRS 可以不用，都放在 app 里的 static 中也可以
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../../../django_ulysses/learning_logs/static/'),
+    os.path.join(BASE_DIR, 'static'),
 ]
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
+
 
 LOGIN_URL = '/users/login/'
 
@@ -171,7 +190,7 @@ BOOTSTRAP4 = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') or "2276777056@qq.com"
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') or password.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') or password.EMAIL_HOST_PASSWORD
 EMAIL_USE_SSL = True
 

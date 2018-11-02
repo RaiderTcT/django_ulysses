@@ -1,7 +1,10 @@
 from django.core.mail import send_mail,send_mass_mail, EmailMultiAlternatives
 from django.template import loader, Template
 from celery import task
-from django_ulysses.settings import BASE_URL
+from django.conf import settings
+from django.contrib.sites.models import Site
+from django.urls import reverse
+import absoluteuri
 import os
 
 
@@ -11,7 +14,17 @@ def send_register_email(user, token):
     subject, from_email, to = "[Django]验证用户", os.environ.get('EMAIL_HOST_USER', "2276777056@qq.com"), \
                               user.email
 
-    url = BASE_URL+f'users/confirm/{token}'
+    # my_relative_url = f'/users/confirm/{token}'
+    # url = absoluteuri.build_absolute_uri(my_relative_url)
+    # url = absoluteuri.reverse('confirm', kwargs={'token':token})
+    # 获取当前网站
+    site = Site.objects.get_current()
+    # 协议名：//域名/path
+    url = '{protocol}://{domain}{path}'.format(
+        protocol=getattr(settings, 'ABSOLUTEURI_PROTOCOL', 'http'),
+        domain=site.domain,
+        path= reverse('users:confirm', args=[token])
+    )
 
     text_content = f"{user.username}，你好\
                     欢迎来到 Ulysses\

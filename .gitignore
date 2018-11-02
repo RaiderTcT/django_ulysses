@@ -6,3 +6,4 @@ jinja2_dddd.html
 db.sqlite3
 password.py
 media/
+collected_static/

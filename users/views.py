@@ -5,12 +5,12 @@ from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django_ulysses.settings import DANGER, PRIMARY
+from django_ulysses.settings import DANGER, PRIMARY, EMAIL_HOST_USER
 from .confirm import token_confirm
 from .forms import RegisterForm, UserProfileForm
 from users.tasks import send_register_email
 from .models import UserProfile
-from PIL import Image
+from .my_email import my_send_mail
 # Create your views here.
 
 def confirm(request, token):
@@ -55,7 +55,9 @@ def register(request):
 
             token = token_confirm.generate_validate_token(new_user.username)
             print(f"token:{token}")
+
             send_register_email.delay(new_user, token)
+            # my_send_mail('注册', '验证',EMAIL_HOST_USER, [new_user.email])
             messages.add_message(request, messages.INFO, '验证邮件已发送，请查收')
 
             # 注册后的用户 直接登录， 重定向到首页
