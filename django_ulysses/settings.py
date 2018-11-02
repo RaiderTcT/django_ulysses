@@ -54,7 +54,7 @@ SECRET_KEY = '8pqf(8jqsytrh#-%_0tbrxcibvc!p)l_f3mozz7$8h1nty(^wj'
 DEBUG = True
 
 # 允许你设置哪些域名可以访问，即使在 Apache 或 Nginx 等中绑定了，这里不允许的话，也是不能访问的。
-ALLOWED_HOSTS = ['www.djulysses.com', ]
+ALLOWED_HOSTS = ['127.0.0.1' ]
 
 
 # Application definition

@@ -17,7 +17,7 @@ def index(request):
     context = {'name':'<b>Hello</b>'}
     return render(request, 'index.html', context)
 
-@login_required
+
 def topic(request, topic_id):
     """根据id访问topic的信息"""
     # id = request.GET.get('id', 4)

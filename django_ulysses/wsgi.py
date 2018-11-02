@@ -18,6 +18,10 @@ from os.path import join, dirname, abspath
 PROJECT_DIR = dirname(dirname(abspath(__file__)))  # 3
 import sys  # 4
 
+# path = os.getcwd()
+# if path not in sys.path:
+# 	sys.path.append(path)
+
 sys.path.insert(0, PROJECT_DIR)  # 5
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "django_ulysses.settings"  # 7
