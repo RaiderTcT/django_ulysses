@@ -27,5 +27,4 @@ sys.path.insert(0, PROJECT_DIR)  # 5
 os.environ["DJANGO_SETTINGS_MODULE"] = "django_ulysses.settings"  # 7
 
 from django.core.wsgi import get_wsgi_application
-
 application = get_wsgi_application()

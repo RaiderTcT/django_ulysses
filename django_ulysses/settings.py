@@ -51,10 +51,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace("\\", "/")
 SECRET_KEY = '8pqf(8jqsytrh#-%_0tbrxcibvc!p)l_f3mozz7$8h1nty(^wj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # 允许你设置哪些域名可以访问，即使在 Apache 或 Nginx 等中绑定了，这里不允许的话，也是不能访问的。
-ALLOWED_HOSTS = ['127.0.0.1' ]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost' ]
 
 
 # Application definition
