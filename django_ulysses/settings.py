@@ -38,6 +38,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace("\\", "/")
 
+FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixture'), ]
+
 # 使用自定义的模型替代默认User
 # AUTH_USER_MODEL = 'users.User'
 
@@ -51,7 +53,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace("\\", "/")
 SECRET_KEY = '8pqf(8jqsytrh#-%_0tbrxcibvc!p)l_f3mozz7$8h1nty(^wj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # 允许你设置哪些域名可以访问，即使在 Apache 或 Nginx 等中绑定了，这里不允许的话，也是不能访问的。
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost' ]
