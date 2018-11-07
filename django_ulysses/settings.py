@@ -130,6 +130,8 @@ DATABASES = {
     }
 }
 
+# The lifetime of a database connection, in seconds
+CONN_MAX_AGE = 0
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
