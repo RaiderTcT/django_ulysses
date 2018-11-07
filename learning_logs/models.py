@@ -12,8 +12,14 @@ class Topic(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE ,verbose_name='the owner of this topic')
 
+    class Meta:
+        app_label = 'learning_logs'
+
+
     def __str__(self):
         return self.text
+
+
 
 class Post(models.Model):
     """同一Topic下的多篇文章"""
@@ -33,14 +39,15 @@ class Post(models.Model):
     # None are required, and adding class Meta to a model is completely optional.
     class Meta:
         verbose_name_plural = 'posts'
+        app_label = 'learning_logs'
 
     def __str__(self):
         return  self.text[:50] + '...'
 
 
-class ExampleModel(models.Model):
-    name = models.CharField(max_length=10)
-    content = MDTextField()
+# class ExampleModel(models.Model):
+#     name = models.CharField(max_length=10)
+#     content = MDTextField()
 
 
 # 只提交Markdown源文本，在服务器上进行转换

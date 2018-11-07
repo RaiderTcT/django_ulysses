@@ -124,14 +124,51 @@ WSGI_APPLICATION = 'django_ulysses.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # },
+    'default':{
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_ulysses',
+        'PASSWORD': password.mysql_passwd,
+        'USER': password.dbuser,
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    # 'learning_logs':{
+    #     'ENGINE':'django.db.backends.mysql',
+    #     'NAME': 'learning_logs',
+    #     'PASSWORD':password.mysql_passwd,
+    #     'USER':password.dbuser,
+    #     'HOST':'localhost',
+    #     'PORT':'3306',
+    # },
+    # 'users':{
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'users',
+    #     'PASSWORD': password.postgres_passwd,
+    #     'USER': password.dbuser,
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
+# multi-database
+# 'path.to.Router'
+# DATABASE_ROUTERS = ['django_ulysses.database_router.DatabaseAppRouter']
+# DATABASE_APP_MAPPING = {
+    # 'app_name' : 'database_name'
+#     'learning_logs': 'learning_logs',
+#     'admin': 'users',
+#     'auth': 'users',
+#     'contenttypes': 'users',
+#     'sessions': 'users',
+#     'users': 'users',
+#     'sites': 'users'
+# }
 
 # The lifetime of a database connection, in seconds
-CONN_MAX_AGE = 0
+CONN_MAX_AGE = 3600
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

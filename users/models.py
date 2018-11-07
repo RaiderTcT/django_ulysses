@@ -35,6 +35,7 @@ class UserProfile(models.Model):
 
     class Meta:
         verbose_name = "用户信息"
+        app_label = 'users'
 
 
     def __str__(self):
