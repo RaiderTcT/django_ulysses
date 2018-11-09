@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block title %}{{ topic.id }}{% endblock %}
-
+{% load l10n %}
 {% block header %}
 <div class="card text-white bg-dark mb-3">
   <div class="card-body">
@@ -10,14 +10,14 @@
     </div>
     <p class="card-text">{{ topic.text|linebreaks }}</p>
     <div class="card-footer text-muted">
-      {{ topic.date_added|date:'M d, Y H:i' }}
+      {{ topic.date_added|date:'M d, Y H:i'}}
     </div>
   </div>
 </div>
 {% endblock %}
 
 {% block content %}
-  <p><a href="{% url 'learning_logs:new_post' topic.id %}">Add new post:</a></p>
+  <p><a href="{% url 'learning_logs:new_post' topic.id %}">{% trans "Add New Post:"%}</a></p>
   {% for post in posts %}
     <div class="card text-white bg-dark mb-3">
       <div class="card-body">
@@ -30,11 +30,11 @@
         {% endif %}
 
         {% if user ==  post.owner%}
-          <a class="btn btn-primary" href="{% url 'learning_logs:edit_post' post.id %}">修改</a>
+          <a class="btn btn-primary" href="{% url 'learning_logs:edit_post' post.id %}">{% trans "Change:"%}</a>
         {% endif %}
       </div>
     </div>
   {% empty %}
-    <p>Waiting to add...</p>
+    <p>{% trans "Waiting to add ..."%}</p>
   {% endfor %}
 {% endblock %}

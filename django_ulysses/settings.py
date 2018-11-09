@@ -86,6 +86,8 @@ ABSOLUTEURI_PROTOCOL = 'http'
 
 
 MIDDLEWARE = [
+    # 缓存整个站点需要
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,7 +96,43 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    # 缓存整个站点需要
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
+
 ]
+
+
+CACHES = {
+    # 默认缓存
+    'default':{
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    },
+    # 使用文件缓存
+    'filecached': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/django_cache',
+    },
+    # 使用memcached做缓存
+    'memcached': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': ['127.0.0.1:11211',],
+        'TIMEOUT': 60 * 60,
+    },
+    # 开发时使用的虚拟缓存，只是实现接口，实际不缓存
+    'dummycached':{
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    # 使用数据库缓存，使用项目的数据库中的表做缓存
+    'dbcached': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    },
+}
+
+CACHE_MIDDLEWARE_ALIAS = 'memcached'
+CACHE_MIDDLEWARE_SECONDS = 60 * 15
+CACHE_MIDDLEWARE_KEY_PREFIX = 'django_ulysses'
 
 ROOT_URLCONF = 'django_ulysses.urls'
 
@@ -102,7 +140,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, '/learning_logs/templates').replace("\\", "/"),
-                 os.path.join(BASE_DIR, '/users/templates').replace("\\", "/")],
+                 os.path.join(BASE_DIR, '/users/templates').replace("\\", "/"),
+                 os.path.join(BASE_DIR, '/html').replace("\\", "/")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,8 +164,8 @@ WSGI_APPLICATION = 'django_ulysses.wsgi.application'
 
 DATABASES = {
     # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     # 'ENGINE': 'django.db.backends.sqlite3',
+    #     # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # },
     'default':{
         'ENGINE': 'django.db.backends.mysql',
@@ -145,19 +184,19 @@ DATABASES = {
     #     'PORT':'3306',
     # },
     # 'users':{
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'users',
-    #     'PASSWORD': password.postgres_passwd,
+    #     'PASSWORD': password.mysql_passwd,
     #     'USER': password.dbuser,
     #     'HOST': 'localhost',
-    #     'PORT': '5432',
+    #     'PORT': '3306',
     # }
 }
 # multi-database
 # 'path.to.Router'
 # DATABASE_ROUTERS = ['django_ulysses.database_router.DatabaseAppRouter']
 # DATABASE_APP_MAPPING = {
-    # 'app_name' : 'database_name'
+#     # 'app_name' : 'database_name'
 #     'learning_logs': 'learning_logs',
 #     'admin': 'users',
 #     'auth': 'users',
@@ -192,7 +231,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
+LANGUAGES = (
+    ('en', ('English')),
+    ('zh-hans', ('中文简体')),
+    # ('zh-hant', ('中文繁體')),
+)
 LANGUAGE_CODE = 'zh-Hans'
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
+
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -274,3 +323,6 @@ MDEDITOR_CONFIGS = {
     }
 
 }
+
+
+

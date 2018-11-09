@@ -7,7 +7,7 @@ from mdeditor.fields import MDTextField
 # Create your models here.
 class Topic(models.Model):
     """主题"""
-    id = models.IntegerField(auto_created=True, primary_key=True)
+    id = models.AutoField(primary_key=True)
     text = models.CharField(max_length=20)
     date_added = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE ,verbose_name='the owner of this topic')
@@ -24,7 +24,7 @@ class Topic(models.Model):
 class Post(models.Model):
     """同一Topic下的多篇文章"""
     # many to one relationship
-    id = models.IntegerField(auto_created=True, primary_key=True)
+    id = models.AutoField(primary_key=True)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, verbose_name='the related topic')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='the owner of the post')
     # text = models.TextField('post content')

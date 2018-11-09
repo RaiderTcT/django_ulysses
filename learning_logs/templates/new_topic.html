@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load bootstrap4 %}
-{% block title %}New Topic{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "New Topic:"%}{% endblock %}
 {% block header %}
   <h2>Add a new topic:</h2>
 {% endblock %}
@@ -9,6 +10,6 @@
 <form class="form" action="{% url 'learning_logs:new_topic' %}" method="post">
   {% csrf_token %}
   {% bootstrap_form form %}
-  <input type="submit" value="提交"/>
+  <input type="submit" value={% trans "Submit"%}/>
 </form>
 {% endblock %}

@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load bootstrap4 %}
-{% block title %}New post{% endblock %}
+{% block title %}{% trans "New Post"%}{% endblock %}
 {% block content%}
 <h1><a href="{% url 'learning_logs:topic' topic.id %}">{{ topic }} </a></h1>
-<p>Add new post:</p>
+<p>{% trans "Add new post:"%}</p>
 <form action="{% url 'learning_logs:new_post' topic.id %}" method="post">
   {% csrf_token %}
   {{form.media}}
   {% bootstrap_form form %}
-  <input type="submit" value="添加"/>
+  <input type="submit" value={% trans "Add"%}/>
 </form>
 {% endblock %}

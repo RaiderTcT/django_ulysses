@@ -11,6 +11,7 @@ from .forms import RegisterForm, UserProfileForm
 from users.tasks import send_register_email
 from .models import UserProfile
 from .my_email import my_send_mail
+from django.utils.translation import gettext as _
 # Create your views here.
 
 def confirm(request, token):
@@ -21,19 +22,22 @@ def confirm(request, token):
         users = User.objects.filter(username=username).all()
         for user in users:
             user.delete()
-        messages.add_message(request, DANGER, '验证码错误或已过期，请重新注册')
+        re_register_message = _('The verification code is incorrect or has expired. Please re-register')
+        messages.add_message(request, DANGER, re_register_message)
         return HttpResponseRedirect(reverse('learning_logs:index'))
 
     try:
         user =User.objects.get(username=username)
     except User.DoesNotExist:
-        messages.add_message(request, DANGER, '没有此用户，请重新注册')
+        no_user_message = _('no this user please register')
+        messages.add_message(request, DANGER, no_user_message)
         return HttpResponseRedirect(reverse('learning_logs:index'))
 
     user.is_active = True
     user.save()
     login(request, user)
-    messages.add_message(request, messages.SUCCESS, "验证成功，已登录")
+    success_message = _('Successful verification')
+    messages.add_message(request, messages.SUCCESS, success_message)
 
     return HttpResponseRedirect(reverse('learning_logs:index'))
 
@@ -58,7 +62,8 @@ def register(request):
 
             send_register_email.delay(new_user, token)
             # my_send_mail('注册', '验证',EMAIL_HOST_USER, [new_user.email])
-            messages.add_message(request, messages.INFO, '验证邮件已发送，请查收')
+            check_mail_message = _('Verification email has been sent, please check')
+            messages.add_message(request, messages.INFO, check_mail_message)
 
             # 注册后的用户 直接登录， 重定向到首页
             # authenticated_user = authenticate(username=new_user.username,

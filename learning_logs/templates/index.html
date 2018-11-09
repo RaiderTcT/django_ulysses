@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% block title %}Index{% endblock %}
 {% block header %}
   <div class="jumbotron">
@@ -7,5 +8,6 @@
   </div>
 {% endblock %}
 {% block content %}
-    <img src="{% static 'img/nan.jpg' %}" alt="南风不竞"/>
+  <p>{{ name }} </p>
+  {% blocktrans %}This string will have {{ name }} inside.{% endblocktrans %}
 {% endblock %}

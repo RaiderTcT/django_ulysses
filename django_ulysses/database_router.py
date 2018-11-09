@@ -32,6 +32,9 @@
 #         if db_obj1 and db_obj2:
 #             if db_obj1 == db_obj2:
 #                 return True
+#             elif db_obj1 in ('auth', 'learning_logs') \
+#                     and db_obj2 in ('auth', 'learning_logs'):
+#                 return True
 #             else:
 #                 return False
 #         return None

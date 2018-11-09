@@ -17,9 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
-
-urlpatterns = [
+from django.conf.urls.i18n import i18n_patterns
+urlpatterns = i18n_patterns(
+    path(r'^i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
     path('', include('learning_logs.urls', namespace='learning_logs')),
     path('users/', include('users.urls', namespace='users')),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+)+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 在url加前缀 en-us zh-hans
+# urlpatterns += i18n_patterns(
+#     path('', include('learning_logs.urls', namespace='learning_logs')),
+# )

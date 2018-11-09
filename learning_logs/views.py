@@ -7,17 +7,29 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from datetime import datetime
 from django.contrib import messages
-from markdown import markdown
-# Create your views here.
+from django.views.decorators.cache import cache_page
+from django.core.cache import caches
+import os
+from django.template.loader import render_to_string
+from django_ulysses.settings import BASE_DIR
+from django.utils.translation import gettext as _
 def index(request):
-    html = '<html><head><title>Index</title></head>' \
-           '<body><h1>Welcome to Ulysses</h1>' \
-           '</body>' \
-           '</html>'
-    context = {'name':'<b>Hello</b>'}
+    # cache = caches['memcached']
+    # key = cache.get_or_set('key_word', 'kyyyyy')
+    # output = _('Weicome to my site')
+    # Translators: This message appears on the home page only
+    output = _('Weicome to my site')
+    context = {'name':output}
+    # static_html = f'{BASE_DIR}/learning_logs/templates/static_index.html'
+    # if not os.path.exists(static_html):
+    #     content = render_to_string('index.html', context)
+    #     with open(static_html, 'w') as static_file:
+    #         static_file.write(content)
+    # return render(request, static_html)
     return render(request, 'index.html', context)
 
-
+# 缓存时间15min
+@cache_page(60 * 15, cache='filecached')
 def topic(request, topic_id):
     """根据id访问topic的信息"""
     # id = request.GET.get('id', 4)
@@ -29,19 +41,22 @@ def topic(request, topic_id):
     except Topic.DoesNotExist:
         return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
 
-
+@cache_page(60 * 15, cache='filecached')
 def topics(request):
     """全部的topics"""
+    # 使用Paginator需要有排序
     topics = Topic.objects.order_by('-date_added')
     paginator = Paginator(topics, 10) # 每页25条
     try:
         page = request.GET.get('page')
     except InvalidPage:
-        raise Http404('指定的页面不存在')
+        error_404 = _('Not find')
+        raise Http404(error_404)
     topics = paginator.get_page(page) # 获取指定页面
     context = {'topics':topics}
     return render(request, 'topics.html', context)
 
+@cache_page(60 * 15, cache='filecached')
 @login_required
 def my_topics(request):
     # 取当登录前用户创建的topic
@@ -50,10 +65,12 @@ def my_topics(request):
     try:
         page = request.GET.get('page')
     except InvalidPage:
-        raise Http404('指定的页面不存在')
+        error_404 = _('Not find')
+        raise Http404(error_404)
     topics = paginator.get_page(page) # 获取指定页面
     context = {'topics':topics}
     return render(request, 'topics.html', context)
+
 
 @login_required
 def new_topic(request):
@@ -67,7 +84,6 @@ def new_topic(request):
             # 添加数据到数据库
             topic = Topic(text=request.POST.get('text'), owner=request.user)
 
-            print(f'text:{topic.text}')
             topic.save()
             # process the data in form.cleaned_data as required
             # ...
@@ -88,7 +104,8 @@ def new_post(request, topic_id):
     try:
         topic = Topic.objects.get(id=topic_id)
     except Topic.DoesNotExist:
-        raise Http404('No this topic')
+        error_404 = _('Not this Blog')
+        raise Http404(error_404)
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -122,10 +139,12 @@ def edit_post(request, post_id):
     try:
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
-        raise Http404('No this post')
+        error_404 = _('No this post')
+        raise Http404(error_404)
     topic = post.topic
     if post.owner != request.user:
-        raise Http404('You have no right to edit this post')
+        error_rights = _('You have no right to edit this post')
+        raise Http404(error_rights)
 
     if request.method != "POST":
         # 初次请求，获取包含post数据的表单
@@ -143,18 +162,23 @@ def edit_post(request, post_id):
     context = {'form': form, 'topic': topic, 'post': post}
     return render(request, 'edit_post.html', context)
 
+
+
 def search(request):
     key_word = request.POST.get('key_word')
     if not key_word:
-        messages.add_message(request, messages.WARNING, '请输入查询内容')
+        warming_message = _('Please enter the query content')
+        messages.add_message(request, messages.WARNING, warming_message)
         return HttpResponseRedirect(reverse('learning_logs:topics'))
-    topics = Topic.objects.filter(text__contains=key_word).all()
+    topics = Topic.objects.filter(text__contains=key_word).order_by('-date_added')
+    # cache = caches['dbcached']
+    # cache.set('key_word', key_word, 60*15)
     paginator = Paginator(topics, 10)  # 每页25条
     try:
         page = request.GET.get('page')
     except InvalidPage:
-        raise Http404('指定的页面不存在')
+        error_404 = _('Not find')
+        raise Http404(error_404)
     topics = paginator.get_page(page) # 获取指定页面
     context = {'topics':topics}
     return render(request, 'topics.html', context)
-
