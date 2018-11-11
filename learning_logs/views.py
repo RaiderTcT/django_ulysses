@@ -14,9 +14,6 @@ from django.template.loader import render_to_string
 from django_ulysses.settings import BASE_DIR
 from django.utils.translation import gettext as _
 def index(request):
-    # cache = caches['memcached']
-    # key = cache.get_or_set('key_word', 'kyyyyy')
-    # output = _('Weicome to my site')
     # Translators: This message appears on the home page only
     output = _('Weicome to my site')
     context = {'name':output}

@@ -134,6 +134,23 @@ CACHE_MIDDLEWARE_ALIAS = 'memcached'
 CACHE_MIDDLEWARE_SECONDS = 60 * 15
 CACHE_MIDDLEWARE_KEY_PREFIX = 'django_ulysses'
 
+# 会话默认存储在数据库表 django_session
+
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+
+# 使用文件存储会话时，会话文件的存储位置
+SESSION_FILE_PATH = '/tmp/django_session_file/'
+
+# 选择会话存储在哪个缓存
+# SESSION_CACHE_ALIAS = 'memcached'
+
+# 防止JS脚本访问存储的数据
+SESSION_COOKIE_HTTPONLY = True
+
+
+
 ROOT_URLCONF = 'django_ulysses.urls'
 
 TEMPLATES = [

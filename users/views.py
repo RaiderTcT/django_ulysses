@@ -98,6 +98,13 @@ def edit_profile(request, user_id):
         # 使用数据库中查询得到profile创建表单
         form = UserProfileForm(instance=profile)
     else:
+        # 测试浏览器是否支持cookie
+        # if request.session.test_cookie_worked():
+        #     request.session.delete_test_cookie()
+        #     messages.add_message(request, messages.INFO, '支持cookie')
+        # else:
+        #     messages.add_message(request, messages.INFO, '不支持cookie')
+
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             # cleaned_data 将输入数据规范化成合适的格式
@@ -107,6 +114,7 @@ def edit_profile(request, user_id):
             form.save()
         return HttpResponseRedirect(reverse('users:profile',args=(user_id,)))
     context = {'form': form, 'user': user}
+    # request.session.set_test_cookie()
     return render(request, 'edit_profile.html', context)
 
 @login_required
