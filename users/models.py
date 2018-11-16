@@ -39,7 +39,7 @@ class UserProfile(models.Model):
 
 
     def __str__(self):
-        return f"{self.user.__str__()}'s profile"
+        return f"{self.user.__str__()} profile"
 
 # 在接收到user对象被保存后的信号时 创建一个profile
 # sender: 发出信号的模型

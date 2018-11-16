@@ -44,8 +44,6 @@ FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixture'), ]
 # AUTH_USER_MODEL = 'users.User'
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -56,7 +54,7 @@ SECRET_KEY = '8pqf(8jqsytrh#-%_0tbrxcibvc!p)l_f3mozz7$8h1nty(^wj'
 DEBUG = True
 
 # 允许你设置哪些域名可以访问，即使在 Apache 或 Nginx 等中绑定了，这里不允许的话，也是不能访问的。
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost' ]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '132.232.210.149']
 
 
 # Application definition
@@ -104,7 +102,7 @@ MIDDLEWARE = [
 
 CACHES = {
     # 默认缓存
-    'default':{
+    'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
     },
@@ -116,11 +114,11 @@ CACHES = {
     # 使用memcached做缓存
     'memcached': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': ['127.0.0.1:11211',],
+        'LOCATION': ['127.0.0.1:11211', ],
         'TIMEOUT': 60 * 60,
     },
     # 开发时使用的虚拟缓存，只是实现接口，实际不缓存
-    'dummycached':{
+    'dummycached': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
     # 使用数据库缓存，使用项目的数据库中的表做缓存
@@ -130,7 +128,7 @@ CACHES = {
     },
 }
 
-CACHE_MIDDLEWARE_ALIAS = 'memcached'
+CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 60 * 15
 CACHE_MIDDLEWARE_KEY_PREFIX = 'django_ulysses'
 
@@ -138,7 +136,7 @@ CACHE_MIDDLEWARE_KEY_PREFIX = 'django_ulysses'
 
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 # SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+# SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
 # 使用文件存储会话时，会话文件的存储位置
 SESSION_FILE_PATH = '/tmp/django_session_file/'
@@ -148,7 +146,6 @@ SESSION_FILE_PATH = '/tmp/django_session_file/'
 
 # 防止JS脚本访问存储的数据
 SESSION_COOKIE_HTTPONLY = True
-
 
 
 ROOT_URLCONF = 'django_ulysses.urls'
@@ -180,18 +177,18 @@ WSGI_APPLICATION = 'django_ulysses.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     # 'ENGINE': 'django.db.backends.sqlite3',
-    #     # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # },
-    'default':{
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_ulysses',
-        'PASSWORD': password.mysql_passwd,
-        'USER': password.dbuser,
-        'HOST': 'localhost',
-        'PORT': '3306',
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'django_ulysses',
+    #     'PASSWORD': password.mysql_passwd,
+    #     'USER': password.dbuser,
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
+    # },
     # 'learning_logs':{
     #     'ENGINE':'django.db.backends.mysql',
     #     'NAME': 'learning_logs',
@@ -305,7 +302,7 @@ EMAIL_USE_SSL = True
 # 时区
 CELERY_TIMEZONE = 'Asia/Shanghai'
 # 中间件
-BROKER_URL= 'redis://localhost:6379/0'
+BROKER_URL = 'redis://localhost:6379/0'
 
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 # CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler' ###
@@ -340,6 +337,3 @@ MDEDITOR_CONFIGS = {
     }
 
 }
-
-
-
