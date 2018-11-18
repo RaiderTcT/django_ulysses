@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'absoluteuri',
     "djcelery",
     'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
 
 SITE_ID = 1
