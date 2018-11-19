@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, Http404
@@ -39,7 +39,8 @@ def confirm(request, token):
     success_message = _('Successful verification')
     messages.add_message(request, messages.SUCCESS, success_message)
 
-    return HttpResponseRedirect(reverse('learning_logs:index'))
+    return redirect('learning_logs:index')
+    # return HttpResponseRedirect(reverse('learning_logs:index'))
 
 def register(request):
     """注册用户"""
@@ -69,8 +70,8 @@ def register(request):
             # authenticated_user = authenticate(username=new_user.username,
             #                                   password=request.POST.get('password1', ""))
             # login(request, authenticated_user)
-
-            return HttpResponseRedirect(reverse('learning_logs:index'))
+            return redirect('learning_logs:index')
+            # return HttpResponseRedirect(reverse('learning_logs:index'))
     context = {'form': form}
     return render(request, 'register.html', context)
 
@@ -112,7 +113,8 @@ def edit_profile(request, user_id):
             # profile.location = form.cleaned_data['location']
             # profile.tel = form.cleaned_data['tel']
             form.save()
-        return HttpResponseRedirect(reverse('users:profile',args=(user_id,)))
+        return redirect('users:profile', user_id=user_id)
+        # return HttpResponseRedirect(reverse('users:profile',args=(user_id,)))
     context = {'form': form, 'user': user}
     # request.session.set_test_cookie()
     return render(request, 'edit_profile.html', context)

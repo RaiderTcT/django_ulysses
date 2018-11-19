@@ -49,7 +49,7 @@ class TestModel(models.Model):
     topic = models.ManyToManyField(Topic)
     headline = models.CharField(max_length=255)
 
-    def __str__(seld):
+    def __str__(self):
         return self.headline
 
 

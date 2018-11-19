@@ -16,17 +16,21 @@ Including another URLconf
 
 
 from django.urls import path, re_path
+from django.contrib.auth.decorators import login_required
 from . import views
 
 app_name = 'learning_logs'
 urlpatterns = [
     path('', views.index, name='index'),
+    # path('', views.IndexView.as_view()),
     path('topic/<int:topic_id>/', views.topic, name='topic'),
-    path('topics/', views.topics, name='topics'),
-    path('new_topic/', views.new_topic, name='new_topic'),
+
+    # path('topics/', views.topics, name='topics'),
+    path('topics/', views.Topics.as_view(), name='topics'),
+    # path('new_topic/', views.new_topic, name='new_topic'),
+    path('new_topic/', views.NewtopicView.as_view(), name='new_topic'),
     path('new_post/<int:topic_id>/', views.new_post, name='new_post'),
     path('edit_post/<int:post_id>/', views.edit_post, name='edit_post'),
     path('my_topics/', views.my_topics, name='my_topics'),
     path("search/", views.search, name='search'),
 ]
-

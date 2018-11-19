@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, Http404,HttpResponseNotFound,HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
 from .models import Topic, Post
 from .forms import TopicForm, PostForm
@@ -7,16 +7,31 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from datetime import datetime
 from django.contrib import messages
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, never_cache
 from django.core.cache import caches
 import os
 from django.template.loader import render_to_string
 from django_ulysses.settings import BASE_DIR
 from django.utils.translation import gettext as _
+from django.views import View
+from django.views.generic import ListView
+from django.utils.decorators import method_decorator
+
+# 基于类的视图
+
+
+class IndexView(View):
+    def get(self, request):
+        return HttpResponse('get result')
+
+    def post(self, request):
+        return HttpResponse('post result')
+
+
 def index(request):
     # Translators: This message appears on the home page only
     output = _('Weicome to my site')
-    context = {'name':output}
+    context = {'name': output}
     # static_html = f'{BASE_DIR}/learning_logs/templates/static_index.html'
     # if not os.path.exists(static_html):
     #     content = render_to_string('index.html', context)
@@ -24,6 +39,7 @@ def index(request):
     #         static_file.write(content)
     # return render(request, static_html)
     return render(request, 'index.html', context)
+
 
 # 缓存时间15min
 # @cache_page(60 * 15, cache='filecached')
@@ -33,40 +49,90 @@ def topic(request, topic_id):
     try:
         t = Topic.objects.get(id=topic_id)
         posts = t.post_set.order_by('-date_added')
-        context = {'topic': t, 'posts':posts, 'user':request.user}
+        context = {'topic': t, 'posts': posts, 'user': request.user}
         return render(request, 'topic.html', context)
     except Topic.DoesNotExist:
         return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
 
 # @cache_page(60 * 15, cache='filecached')
+
+
+class Topics(ListView):
+    # 指定模板
+    template_name = 'topic_list.html'
+
+    model = Topic
+    # 每页显示数量
+    paginate_by = 10
+    # 最后一页最多显示
+    paginate_orphans = 15
+    # 分页排序的标准
+    ordering = 'date_added'
+    # 修改默认的object_list名称
+    context_object_name = 'topic_list'
+
+
+
 def topics(request):
     """全部的topics"""
     # 使用Paginator需要有排序
     topics = Topic.objects.order_by('-date_added')
-    paginator = Paginator(topics, 10) # 每页25条
+    paginator = Paginator(topics, 10)  # 每页25条
     try:
         page = request.GET.get('page')
     except InvalidPage:
         error_404 = _('Not find')
         raise Http404(error_404)
-    topics = paginator.get_page(page) # 获取指定页面
-    context = {'topics':topics}
+    topics = paginator.get_page(page)  # 获取指定页面
+    context = {'topics': topics}
     return render(request, 'topics.html', context)
+
 
 # @cache_page(60 * 15, cache='filecached')
 @login_required
 def my_topics(request):
     # 取当登录前用户创建的topic
     topics = Topic.objects.filter(owner=request.user).order_by('-date_added')
-    paginator = Paginator(topics, 10) # 每页25条
+    paginator = Paginator(topics, 10)  # 每页25条
     try:
         page = request.GET.get('page')
     except InvalidPage:
         error_404 = _('Not find')
         raise Http404(error_404)
-    topics = paginator.get_page(page) # 获取指定页面
-    context = {'topics':topics}
+    topics = paginator.get_page(page)  # 获取指定页面
+    context = {'topics': topics}
     return render(request, 'topics.html', context)
+
+
+# new_topic 的 基于类的视图
+# 装饰一个类
+decorators = [never_cache, login_required]
+# @method_decorator(login_required, name='dispatch')
+# @method_decorator(never_cache, name='dispatch')
+
+
+@method_decorator(decorators, name='dispatch')
+class NewtopicView(View):
+    form_class = TopicForm
+    initial = {}
+    template_name = 'new_topic.html'
+
+    # 装饰类的每一个实例
+    # @method_decorator(login_required)
+    # def dispatch(self, *args, **kwargs):
+    #     return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            topic = Topic(text=request.POST.get('text'), owner=request.user)
+            topic.save()
+            return redirect('learning_logs:my_topics')
+        return render(request, self.template_name, {'form': form})
 
 
 @login_required
@@ -85,13 +151,15 @@ def new_topic(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('learning_logs:my_topics'))
+            return redirect('learning_logs:my_topics')
+            # return HttpResponseRedirect(reverse('learning_logs:my_topics'))
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = TopicForm()
 
     return render(request, 'new_topic.html', {'form': form})
+
 
 @login_required
 def new_post(request, topic_id):
@@ -121,14 +189,15 @@ def new_post(request, topic_id):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            # return redirect('learning_logs:topic', args=[topic_id])
-            return HttpResponseRedirect(reverse('learning_logs:topic', args=[topic_id]))
+            return redirect('learning_logs:topic', topic_id=topic_id)
+            # return HttpResponseRedirect(reverse('learning_logs:topic', args=[topic_id]))
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = PostForm()
     context = {'form': form, 'topic': topic}
     return render(request, 'new_post.html', context=context)
+
 
 @login_required
 def edit_post(request, post_id):
@@ -155,11 +224,11 @@ def edit_post(request, post_id):
             post = form.save(commit=False)
             # post.html_content = markdown(form.cleaned_data['text'])
             post.save()
-            return HttpResponseRedirect(reverse('learning_logs:topic', args=(topic.id,)))
+            return redirect('learning_logs:topic', topic_id=topic.id)
+            # return HttpResponseRedirect(reverse('learning_logs:topic', args=(topic.id,)))
 
     context = {'form': form, 'topic': topic, 'post': post}
     return render(request, 'edit_post.html', context)
-
 
 
 def search(request):
@@ -177,6 +246,6 @@ def search(request):
     except InvalidPage:
         error_404 = _('Not find')
         raise Http404(error_404)
-    topics = paginator.get_page(page) # 获取指定页面
-    context = {'topics':topics}
+    topics = paginator.get_page(page)  # 获取指定页面
+    context = {'topics': topics}
     return render(request, 'topics.html', context)

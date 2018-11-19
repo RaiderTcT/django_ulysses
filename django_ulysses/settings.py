@@ -14,6 +14,7 @@ import os
 import password
 import djcelery
 from django.contrib.messages import constants as message_constants
+import django_redis
 
 LIGHT = 2
 DARK = 4
@@ -102,6 +103,7 @@ MIDDLEWARE = [
 
 
 CACHES = {
+
     # 默认缓存
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -127,23 +129,36 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'my_cache_table',
     },
+    # 使用redis作为缓存
+    "redis": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": password.redis_passwd
+        }
+    },
 }
 
-CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_ALIAS = 'redis'
 CACHE_MIDDLEWARE_SECONDS = 60 * 15
 CACHE_MIDDLEWARE_KEY_PREFIX = 'django_ulysses'
 
-# 会话默认存储在数据库表 django_session
+# 会话默认存储在数据库表 django_session中
 
+# 选择会话存储在哪个缓存
+SESSION_CACHE_ALIAS = 'redis'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-# SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
+# 使用cookies存储会话
+# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+# SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 # 使用文件存储会话时，会话文件的存储位置
 SESSION_FILE_PATH = '/tmp/django_session_file/'
 
-# 选择会话存储在哪个缓存
-# SESSION_CACHE_ALIAS = 'memcached'
+
 
 # 防止JS脚本访问存储的数据
 SESSION_COOKIE_HTTPONLY = True
@@ -303,9 +318,9 @@ EMAIL_USE_SSL = True
 # 时区
 CELERY_TIMEZONE = 'Asia/Shanghai'
 # 中间件
-BROKER_URL = 'redis://localhost:6379/0'
+BROKER_URL = f'redis://:{password.redis_passwd}@127.0.0.1:6379/2'
 
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = f'redis://:{password.redis_passwd}@127.0.0.1:6379/3'
 # CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler' ###
 
 
