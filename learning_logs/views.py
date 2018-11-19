@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404,HttpResponseNotFound,HttpResponseRedirect
 from django.urls import reverse
 from .models import Topic, Post
@@ -26,7 +26,7 @@ def index(request):
     return render(request, 'index.html', context)
 
 # 缓存时间15min
-@cache_page(60 * 15, cache='filecached')
+# @cache_page(60 * 15, cache='filecached')
 def topic(request, topic_id):
     """根据id访问topic的信息"""
     # id = request.GET.get('id', 4)
@@ -38,7 +38,7 @@ def topic(request, topic_id):
     except Topic.DoesNotExist:
         return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
 
-@cache_page(60 * 15, cache='filecached')
+# @cache_page(60 * 15, cache='filecached')
 def topics(request):
     """全部的topics"""
     # 使用Paginator需要有排序
@@ -53,7 +53,7 @@ def topics(request):
     context = {'topics':topics}
     return render(request, 'topics.html', context)
 
-@cache_page(60 * 15, cache='filecached')
+# @cache_page(60 * 15, cache='filecached')
 @login_required
 def my_topics(request):
     # 取当登录前用户创建的topic
@@ -121,6 +121,7 @@ def new_post(request, topic_id):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
+            # return redirect('learning_logs:topic', args=[topic_id])
             return HttpResponseRedirect(reverse('learning_logs:topic', args=[topic_id]))
 
     # if a GET (or any other method) we'll create a blank form

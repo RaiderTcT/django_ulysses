@@ -22,13 +22,14 @@ from django.contrib.sitemaps.views import sitemap, index
 from .sitemaps import TopicSitemap, PostSitemap
 from learning_logs.models import Topic, Post
 from django.contrib.sitemaps import GenericSitemap
+# sitemap
 sitemaps = {
     'Topic': TopicSitemap,
 }
-info_dict = {
-    'queryset': Topic.objects.all(),
-    'date_field': 'date_added'
-}
+# info_dict = {
+#     'queryset': Topic.objects.all(),
+#     'date_field': 'date_added'
+# }
 
 urlpatterns = i18n_patterns(
     path(r'^i18n/', include('django.conf.urls.i18n')),
