@@ -14,13 +14,13 @@ from django.template.loader import render_to_string
 from django_ulysses.settings import BASE_DIR
 from django.utils.translation import gettext as _
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.utils.decorators import method_decorator
-
-# 基于类的视图
 
 
 class IndexView(View):
+    """基于类的视图"""
+
     def get(self, request):
         return HttpResponse('get result')
 
@@ -54,23 +54,24 @@ def topic(request, topic_id):
     except Topic.DoesNotExist:
         return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
 
-# @cache_page(60 * 15, cache='filecached')
-
 
 class Topics(ListView):
+    """基于类的视图，继承ListView显示topics列表"""
     # 指定模板
     template_name = 'topic_list.html'
 
-    model = Topic
+    # model = Topic
+    queryset = Topic.objects.order_by('-date_added')
     # 每页显示数量
     paginate_by = 10
     # 最后一页最多显示
     paginate_orphans = 15
     # 分页排序的标准
-    ordering = 'date_added'
+    # ordering = 'date_added'
     # 修改默认的object_list名称
     context_object_name = 'topic_list'
 
+# @cache_page(60 * 15, cache='filecached')
 
 
 def topics(request):
@@ -86,6 +87,14 @@ def topics(request):
     topics = paginator.get_page(page)  # 获取指定页面
     context = {'topics': topics}
     return render(request, 'topics.html', context)
+
+
+class MyTopics(Topics):
+    """基于类的视图，继承Topics显示自己的topics"""
+
+    def get_queryset(self):
+        """筛选 作者为当前用户 返回queryset"""
+        return Topic.objects.filter(owner=self.request.user).order_by('-date_added')
 
 
 # @cache_page(60 * 15, cache='filecached')

@@ -12,7 +12,10 @@ from users.tasks import send_register_email
 from .models import UserProfile
 from .my_email import my_send_mail
 from django.utils.translation import gettext as _
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.utils.decorators import method_decorator
 # Create your views here.
+
 
 def confirm(request, token):
     try:
@@ -27,7 +30,7 @@ def confirm(request, token):
         return HttpResponseRedirect(reverse('learning_logs:index'))
 
     try:
-        user =User.objects.get(username=username)
+        user = User.objects.get(username=username)
     except User.DoesNotExist:
         no_user_message = _('no this user please register')
         messages.add_message(request, DANGER, no_user_message)
@@ -41,6 +44,7 @@ def confirm(request, token):
 
     return redirect('learning_logs:index')
     # return HttpResponseRedirect(reverse('learning_logs:index'))
+
 
 def register(request):
     """注册用户"""
@@ -75,6 +79,22 @@ def register(request):
     context = {'form': form}
     return render(request, 'register.html', context)
 
+
+@method_decorator(login_required, name='dispatch')
+class ProfileCreate(CreateView):
+    model = UserProfile
+    template_name = "edit_profile.html"
+    fields = ['location', 'tel', 'about_me', 'avatar']
+
+
+@method_decorator(login_required, name='dispatch')
+class ProfileUpdate(UpdateView):
+    model = UserProfile
+    template_name = "edit_profile.html"
+    # form_class = UserProfileForm
+    fields = ['location', 'tel', 'about_me', 'avatar']
+
+
 @login_required
 def profile(request, user_id):
     """显示个人信息"""
@@ -82,18 +102,19 @@ def profile(request, user_id):
     target_user = User.objects.get(id=user_id)
     # 当前用户
     user = request.user
-    context = {'target_user':target_user, 'user':user}
+    context = {'target_user': target_user, 'user': user}
+    print(target_user.profile.id)
     return render(request, 'user.html', context)
 
 
 @login_required
-def edit_profile(request, user_id):
+def edit_profile(request, profile_id):
     """修改个人信息"""
-    user = User.objects.get(id=user_id)
+
+    profile = get_object_or_404(UserProfile, id=profile_id)
+    user = profile.user
     if user != request.user:
         raise Http404('请登录要修改的账户')
-
-    profile = get_object_or_404(UserProfile, user=user)
 
     if request.method != 'POST':
         # 使用数据库中查询得到profile创建表单
@@ -113,11 +134,12 @@ def edit_profile(request, user_id):
             # profile.location = form.cleaned_data['location']
             # profile.tel = form.cleaned_data['tel']
             form.save()
-        return redirect('users:profile', user_id=user_id)
+        return redirect('users:profile', user_id=user.id)
         # return HttpResponseRedirect(reverse('users:profile',args=(user_id,)))
     context = {'form': form, 'user': user}
     # request.session.set_test_cookie()
     return render(request, 'edit_profile.html', context)
+
 
 @login_required
 def upload_img(request):
@@ -142,7 +164,6 @@ def upload_img(request):
 #         form = AuthenticationForm()
 #     context = {'form':form}
 #     return render(request, 'login.html', context)
-
 
 
 def create_profile():

@@ -15,7 +15,7 @@
       <p>邮箱：<a href="mailto:{{ user.email }}?subject=Hello%20World">{{ target_user.email }}</a></p>
       <P>个人信息
         {% if user == target_user %}
-        <a class="btn btn-default" href="{% url 'users:edit_profile' target_user.id%}" role="button">编辑</a>
+        <a class="btn btn-default" href="{% url 'users:edit_profile' target_user.profile.id %}" role="button">编辑</a>
   {#      {% bootstrap_button "编辑" button_type='link' href="{% url '' %}" button_class="btn-default" %}#}
         {% endif %}
       </P>

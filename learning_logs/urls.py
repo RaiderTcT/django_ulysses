@@ -31,6 +31,7 @@ urlpatterns = [
     path('new_topic/', views.NewtopicView.as_view(), name='new_topic'),
     path('new_post/<int:topic_id>/', views.new_post, name='new_post'),
     path('edit_post/<int:post_id>/', views.edit_post, name='edit_post'),
-    path('my_topics/', views.my_topics, name='my_topics'),
+    # path('my_topics/', views.my_topics, name='my_topics'),
+    path('my_topics/', views.MyTopics.as_view(), name='my_topics'),
     path("search/", views.search, name='search'),
 ]
