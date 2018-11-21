@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from markdown import markdown
 from mdeditor.fields import MDTextField
+from django.urls import reverse
 # Create your models here.
 
 
@@ -16,6 +17,9 @@ class Topic(models.Model):
 
     class Meta:
         app_label = 'learning_logs'
+
+    def get_absolute_url(self):
+        return reverse('learning_logs:my_topics')
 
     def __str__(self):
         return self.text
@@ -40,6 +44,9 @@ class Post(models.Model):
     class Meta:
         verbose_name_plural = 'posts'
         app_label = 'learning_logs'
+
+    def get_absolute_url(self):
+        return reverse('learning_logs:topic', args=(self.topic.id,))
 
     def __str__(self):
         return self.text[:50] + '...'

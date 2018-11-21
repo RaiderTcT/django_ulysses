@@ -1,6 +1,6 @@
 from django.urls import path, include, re_path
 from django.contrib.auth import views as auth_views
-from .views import register, confirm, edit_profile, profile, ProfileUpdate, ProfileCreate
+from .views import register, confirm, edit_profile, profile, ProfileUpdate
 
 app_name = 'users'
 urlpatterns = [

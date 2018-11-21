@@ -15,6 +15,7 @@ from django_ulysses.settings import BASE_DIR
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.utils.decorators import method_decorator
 
 
@@ -39,20 +40,6 @@ def index(request):
     #         static_file.write(content)
     # return render(request, static_html)
     return render(request, 'index.html', context)
-
-
-# 缓存时间15min
-# @cache_page(60 * 15, cache='filecached')
-def topic(request, topic_id):
-    """根据id访问topic的信息"""
-    # id = request.GET.get('id', 4)
-    try:
-        t = Topic.objects.get(id=topic_id)
-        posts = t.post_set.order_by('-date_added')
-        context = {'topic': t, 'posts': posts, 'user': request.user}
-        return render(request, 'topic.html', context)
-    except Topic.DoesNotExist:
-        return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
 
 
 class Topics(ListView):
@@ -113,6 +100,20 @@ def my_topics(request):
     return render(request, 'topics.html', context)
 
 
+# 缓存时间15min
+# @cache_page(60 * 15, cache='filecached')
+def topic(request, topic_id):
+    """根据id访问topic的信息"""
+    # id = request.GET.get('id', 4)
+    try:
+        t = Topic.objects.get(id=topic_id)
+        posts = t.post_set.order_by('-date_added')
+        context = {'topic': t, 'posts': posts, 'user': request.user}
+        return render(request, 'topic.html', context)
+    except Topic.DoesNotExist:
+        return HttpResponseNotFound(f'<h1>Topic:{topic_id} not exist</h1>')
+
+
 # new_topic 的 基于类的视图
 # 装饰一个类
 decorators = [never_cache, login_required]
@@ -121,7 +122,24 @@ decorators = [never_cache, login_required]
 
 
 @method_decorator(decorators, name='dispatch')
+class TopicCreate(CreateView):
+    """
+    基于类的通用视图 
+    """
+    model = Topic
+    fields = ['text']
+    template_name = 'new_topic.html'
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
+@method_decorator(decorators, name='dispatch')
 class NewtopicView(View):
+    """
+    基于类的视图
+    """
     form_class = TopicForm
     initial = {}
     template_name = 'new_topic.html'
@@ -168,6 +186,17 @@ def new_topic(request):
         form = TopicForm()
 
     return render(request, 'new_topic.html', {'form': form})
+
+
+@method_decorator(login_required, name='dispatch')
+class PostCreate(CreateView):
+    model = Post
+    template_name = 'new_post.html'
+    fields = ['text']
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 
 @login_required

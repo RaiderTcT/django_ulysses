@@ -81,13 +81,6 @@ def register(request):
 
 
 @method_decorator(login_required, name='dispatch')
-class ProfileCreate(CreateView):
-    model = UserProfile
-    template_name = "edit_profile.html"
-    fields = ['location', 'tel', 'about_me', 'avatar']
-
-
-@method_decorator(login_required, name='dispatch')
 class ProfileUpdate(UpdateView):
     model = UserProfile
     template_name = "edit_profile.html"

@@ -32,14 +32,14 @@ sitemaps = {
 # }
 
 urlpatterns = i18n_patterns(
-    path(r'^i18n/', include('django.conf.urls.i18n')),
+    path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
     path('', include('learning_logs.urls', namespace='learning_logs')),
     path('users/', include('users.urls', namespace='users')),
     path('sitemap.xml', index, {'sitemaps': sitemaps}),
     path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps},
-     name='django.contrib.sitemaps.views.sitemap'),
-)+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+         name='django.contrib.sitemaps.views.sitemap'),
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # 在url加前缀 en-us zh-hans
 # urlpatterns += i18n_patterns(
