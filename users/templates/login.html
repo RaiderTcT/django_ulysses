@@ -9,7 +9,7 @@
   <form class="form" action="{% url 'users:login' %} " method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <input type="submit" value="登录"/>
+    <input type="submit" name='submit' value="登录"/>
     <input type="hidden" name='next' value="{% url 'learning_logs:index' %}"/>
   </form>
   <p>没有账户，<a href="{% url 'users:register' %}">请注册</a></p>

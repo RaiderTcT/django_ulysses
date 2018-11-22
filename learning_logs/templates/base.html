@@ -9,6 +9,31 @@
     <title>{% block title %}My amazing site{% endblock %}</title>
     {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
+  <script>
+function loadXMLDoc()
+{
+  var xmlhttp;
+  if (window.XMLHttpRequest)
+  {
+    //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+    xmlhttp=new XMLHttpRequest();
+  }
+  else
+  {
+    // IE6, IE5 浏览器执行代码
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange=function()
+  {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+      document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+    }
+  }
+  xmlhttp.open("GET","/media/ajax/test1.txt",true);
+  xmlhttp.send();
+}
+</script>
   </head>
 
 <body>
@@ -66,7 +91,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'learning_logs:my_topics' %}">{% trans "My Blogs" %}</a>
-              <a class="dropdown-item" href="{% url 'users:profile' user.id %}">{% trans "My Profile" %}</a>
+              <a class="dropdown-item" name = 'profile' href="{% url 'users:profile' user.id %}">{% trans "My Profile" %}</a>
               <a class="dropdown-item" href="{% url 'learning_logs:new_topic' %}">{% trans "New Blog" %}</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="{% url 'users:logout' %}">{% trans "Logout" %}</a>

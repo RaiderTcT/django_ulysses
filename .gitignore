@@ -11,3 +11,5 @@ django_ulysses.ini
 reload
 .sock
 fixture/
+.coverage
+htmlcov/

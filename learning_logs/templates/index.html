@@ -3,11 +3,12 @@
 {% load i18n %}
 {% block title %}Index{% endblock %}
 {% block header %}
-  <div class="jumbotron">
+  <div id="myDiv" class="jumbotron">
     <h1>Track your learning.</h1>
   </div>
 {% endblock %}
 {% block content %}
   <p>{{ name }} </p>
+  <button type="button" onclick="loadXMLDoc()">修改内容</button>
   {% blocktrans %}This string will have {{ name }} inside.{% endblocktrans %}
 {% endblock %}

@@ -4,14 +4,27 @@
 # @Link    : http://example.org
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from .models import Topic, Post
+from ..models import Topic, Post
 from django.conf import settings
 
+
 class ClientTestCase(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        """
+        SimpleTestCase and its subclasses (e.g. TestCase, …) rely on setUpClass() and tearDownClass()
+        to perform some class-wide initialization (e.g. overriding settings).
+        If you need to override those methods, don’t forget to call the super implementation:
+        """
+        super().setUpClass()
         User.objects.create_user('Admin', 'admin@qq.com', 'admin12345')
-        self.login = {'username': 'Admin', 'password': 'admin12345'}
-        self.client = Client()
+        cls.login = {'username': 'Admin', 'password': 'admin12345'}
+        cls.client = Client()
+
+    # def setUp(self):
+    #     User.objects.create_user('Admin', 'admin@qq.com', 'admin12345')
+    #     self.login = {'username': 'Admin', 'password': 'admin12345'}
+    #     self.client = Client()
 
     def test_home_page_en(self):
         response = self.client.get('/en/')
