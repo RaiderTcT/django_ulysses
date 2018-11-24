@@ -22,6 +22,8 @@ from django.contrib.sitemaps.views import sitemap, index
 from .sitemaps import TopicSitemap, PostSitemap
 from learning_logs.models import Topic, Post
 from django.contrib.sitemaps import GenericSitemap
+from django.conf import settings
+from .feeds import LastestEntriesFeed
 # sitemap
 sitemaps = {
     'Topic': TopicSitemap,
@@ -39,6 +41,7 @@ urlpatterns = i18n_patterns(
     path('sitemap.xml', index, {'sitemaps': sitemaps}),
     path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
+    path('latest/feed/', LastestEntriesFeed()),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # 在url加前缀 en-us zh-hans

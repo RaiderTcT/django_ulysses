@@ -39,6 +39,8 @@ def index(request):
     #     with open(static_html, 'w') as static_file:
     #         static_file.write(content)
     # return render(request, static_html)
+    # index_logger.info('just for test')
+    print(os.getenv('DJANGO_LOG_LEVEL'))
     return render(request, 'index.html', context)
 
 

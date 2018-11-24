@@ -15,6 +15,7 @@ import password
 import djcelery
 from django.contrib.messages import constants as message_constants
 import django_redis
+import logging
 
 LIGHT = 2
 DARK = 4
@@ -56,7 +57,7 @@ DEBUG = True
 
 # 允许你设置哪些域名可以访问，即使在 Apache 或 Nginx 等中绑定了，这里不允许的话，也是不能访问的。
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '132.232.210.149']
-
+ADMINS = [('Ulysses', '2276777056@qq.com')]
 
 # Application definition
 
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     "djcelery",
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'django.contrib.redirects',
 ]
 
 SITE_ID = 1
@@ -96,6 +98,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # 缓存整个站点需要
     # 'django.middleware.cache.FetchFromCacheMiddleware',
 
@@ -157,7 +160,6 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 # 使用文件存储会话时，会话文件的存储位置
 SESSION_FILE_PATH = '/tmp/django_session_file/'
-
 
 
 # 防止JS脚本访问存储的数据
@@ -352,4 +354,108 @@ MDEDITOR_CONFIGS = {
         'sequence': True  # Whether to open the sequence diagram function
     }
 
+}
+# 设置为None时，会禁用自动配置，仍然会调用日志记录，但不会执行自动配置的设置
+# LOGGING_CONFIG = None
+
+# 设置将log保存到本地文件
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': '/var/log/django_ulysses/debug.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
+
+# 设置log输出到控制台
+# 查看Django的所有调试日志记录
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+#         },
+#     },
+# }
+# 完整的LOGGING配置
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        # 自定义过滤器
+        'special': {
+            # '()': 'project.logging.SpecialFilter',
+            # 'foo': 'bar',
+            'require_debug_true': {
+                '()': 'django.utils.log.RequireDebugTrue',
+            },
+        },
+        # 在DEBUG为True时才行
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        # 将消息打印到控制台
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        # 将错误级别以上的信息发送给admin邮件
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['special']
+        }
+    },
+    'loggers': {
+        # 处于最底层的记录器，会传递给其他记录器
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        # 处理请求相关的消息
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # 自定义记录器
+        'myproject.custom': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+            'filters': ['special']
+        }
+    }
 }

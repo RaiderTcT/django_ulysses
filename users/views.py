@@ -63,7 +63,6 @@ def register(request):
             new_user.save()
 
             token = token_confirm.generate_validate_token(new_user.username)
-            print(f"token:{token}")
 
             send_register_email.delay(new_user, token)
             # my_send_mail('注册', '验证',EMAIL_HOST_USER, [new_user.email])
@@ -96,7 +95,6 @@ def profile(request, user_id):
     # 当前用户
     user = request.user
     context = {'target_user': target_user, 'user': user}
-    print(target_user.profile.id)
     return render(request, 'user.html', context)
 
 
